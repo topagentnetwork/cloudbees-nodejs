@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+NODE_VERSION=0.6.15
+NODE_TAR=tmp/node-v${NODE_VERSION}-sources.tar.gz
+ARCH=`uname -m`
+
+echo "Cleaning up old build products"
+test -f $NODE_TAR && rm $NODE_TAR
+test -d src && rm -rf src
+test -d build && rm -rf build
+
+echo "Downloading sources"
+test -d tmp || mkdir tmp
+wget -q -O $NODE_TAR https://github.com/joyent/node/tarball/v${NODE_VERSION} > /dev/null
+
+echo "Extracting sources"
+mkdir src
+tar -xzof $NODE_TAR -C src --strip-components 1
+
+echo "Starting build"
+mkdir build
+pushd src
+./configure --prefix ../build
+make install
+popd
+
+echo "Creating tar"
+test -d dist || mkdir dist
+tar -czf dist/node-v${NODE_VERSION}-${ARCH}.tar.gz -C build .
