@@ -6,6 +6,8 @@ NODE_VERSION=0.6.15
 NODE_TAR=tmp/node-v${NODE_VERSION}-sources.tar.gz
 ARCH=`uname -m`
 
+nodejs_name=node-v${NODE_VERSION}-${ARCH}
+
 echo "Cleaning up old build products"
 test -f $NODE_TAR && rm $NODE_TAR
 test -d src && rm -rf src
@@ -20,12 +22,15 @@ mkdir src
 tar -xzof $NODE_TAR -C src --strip-components 1
 
 echo "Starting build"
-mkdir build
+builddir=build/${nodejs_name}
+mkdir -p $builddir
 pushd src
-./configure --prefix ../build
+./configure --prefix ../$builddir
 make install
 popd
 
-echo "Creating tar"
+echo "Creating zip"
 test -d dist || mkdir dist
-tar -czf dist/node-v${NODE_VERSION}-${ARCH}.tar.gz -C build .
+pushd build
+zip ../dist/${nodejs_name}.zip ${nodejs_name}
+popd
