@@ -32,5 +32,5 @@ popd
 echo "Creating zip"
 test -d dist || mkdir dist
 pushd build
-zip ../dist/${nodejs_name}.zip ${nodejs_name}
+zip -r ../dist/${nodejs_name}.zip ${nodejs_name}
 popd
